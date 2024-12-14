@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="logo">Search</div>
+<form class="search-container" action="/search" method="GET" onsubmit="showMainContent(event)">
+    <textarea id="searchInput" name="q" placeholder="Write your search query..."></textarea>
+    <button type="submit">Search</button>
+</form>
+<div class="main-content">
+    <p>Welcome to the main content area. Your search results will appear here.</p>
+</div>
+
+<div class="preloader" id="preloader">
+    <div class="spinner"></div>
+</div>
+
+<div class="alert" id="alert">Please enter a search query!</div>
+
+<div class="footer">
+    <p>Made with ❤️ | <a href="#">Privacy</a> | <a href="#">Terms</a></p>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+    function showMainContent(event) {
+        event.preventDefault();
+
+        const searchInput = document.getElementById('searchInput');
+        const alertBox = document.getElementById('alert');
+
+        if (searchInput.value.trim() === '') {
+            // Show alert if input is empty
+            alertBox.classList.add('show');
+            setTimeout(() => alertBox.classList.remove('show'), 3000); // Hide alert after 3 seconds
+            return;
+        }
+
+        // Show the preloader
+        const preloader = document.getElementById('preloader');
+        preloader.classList.add('active');
+
+        // Simulate loading time
+        setTimeout(() => {
+            document.body.classList.add('show-main');
+            preloader.classList.remove('active');
+        }, 2000); // Adjust the duration as needed
+    }
+</script>
+{% endblock %}
