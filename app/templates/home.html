@@ -7,7 +7,15 @@
     <button type="submit">Search</button>
 </form>
 <div class="main-content">
-    <p>Welcome to the main content area. Your search results will appear here.</p>
+    <div id="sentimentCard" class="card sentiment-card sentiment-neutral">
+        <h3>Sentiment Analysis</h3>
+        <p id="sentimentResult">Neutral</p>
+    </div>
+    <div id="topicsCard" class="card topics-card">
+        <h3>Topic Classification</h3>
+        <strong id="topicText"></strong>
+        <p id="topicDescription"></p>
+    </div>
 </div>
 
 <div class="preloader" id="preloader">
@@ -19,8 +27,6 @@
 <div class="footer">
     <p>Made with ❤️ | <a href="#">Privacy</a> | <a href="#">Terms</a></p>
 </div>
-
-
 {% endblock %}
 
 {% block script %}
@@ -40,13 +46,62 @@
 
         // Show the preloader
         const preloader = document.getElementById('preloader');
-        preloader.classList.add('active');
+
+
+        $.ajax({
+            url: '/predict_topic',
+            data: {
+                text: searchInput.value,
+            },
+            beforeSend: () => {
+                preloader.classList.add('active')
+            },
+            success: topic => {
+                $.ajax({
+                    url: '/predict_sentiment',
+                    data: {
+                        text: searchInput.value,
+                    },
+                    success: sentiment => {
+                        console.log(topic, sentiment)
+
+                        document.getElementById('sentimentCard').className = `card sentiment-card sentiment-${sentiment[0].label}`;
+                        document.getElementById('sentimentResult').textContent = sentiment[0].message;
+
+                        document.getElementById('topicText').innerHTML = topic.message;
+                        document.getElementById('topicDescription').innerHTML = topic.content;
+
+                        document.body.classList.add('show-main');
+                        const mainContent = document.querySelector('.main-content');
+                        mainContent.style.display = 'block';
+                        setTimeout(() => mainContent.classList.add('fade-in'), 50); // Add fade-in effect
+
+                        preloader.classList.remove('active');
+                    },
+                    error: err => console.log(err)
+                })
+            },
+            error: err => console.log(err)
+        })
 
         // Simulate loading time
-        setTimeout(() => {
-            document.body.classList.add('show-main');
-            preloader.classList.remove('active');
-        }, 2000); // Adjust the duration as needed
+        // setTimeout(() => {
+        //     // Set sentiment result dynamically (example logic)
+        //     const sentimentResult = "Positive"; // Example: dynamically get this value
+        //     const sentimentCard = document.getElementById('sentimentCard');
+        //     const sentimentText = document.getElementById('sentimentResult');
+
+        //     if (sentimentResult === "Positive") {
+        //         sentimentCard.className = 'card sentiment-card sentiment-positive';
+        //         sentimentText.textContent = "Positive";
+        //     } else if (sentimentResult === "Negative") {
+        //         sentimentCard.className = 'card sentiment-card sentiment-negative';
+        //         sentimentText.textContent = "Negative";
+        //     } else {
+        //         sentimentCard.className = 'card sentiment-card sentiment-neutral';
+        //         sentimentText.textContent = "Neutral";
+        //     }
+        // }, 2000); // Adjust the duration as needed
     }
 </script>
 {% endblock %}

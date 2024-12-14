@@ -77,24 +77,30 @@ body {
 
   .main-content {
     display: none;
+    width: 100%;
+    max-width: 800px;
     opacity: 0;
     margin-top: 20px;
     font-size: 18px;
     text-align: center;
     transition: all 0.5s ease-in-out;
+    margin-right: 10px;
+    margin-left: 10px;
+  }
+
+  .main-content.fade-in {
+    opacity: 1;
+    transform: translateY(-70px);
+    margin-left: 10px;
+    margin-right: 10px;
   }
 
   .show-main .search-container {
-    transform: translateY(-200px);
+    transform: translateY(-70px);
   }
 
   .show-main .logo {
-    transform: translateY(-200px);
-  }
-
-  .show-main .main-content {
-    display: block;
-    opacity: 1;
+    transform: translateY(-70px);
   }
 
   .preloader {
@@ -121,6 +127,58 @@ body {
     border-top: 5px solid #4285f4;
     border-radius: 50%;
     animation: spin 1s linear infinite;
+  }
+
+  .card {
+    border: 1px solid #d9d9d9;
+    border-radius: 12px;
+    padding: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    color: #fff;
+  }
+
+  .sentiment-card {
+    background-color: #f8f9fa;
+  }
+
+  .sentiment-positive {
+    background-color: #28a745;
+  }
+
+  .sentiment-negative {
+    background-color: #dc3545;
+  }
+
+  .sentiment-neutral {
+    background-color: #6c757d;
+  }
+
+  .topics-card {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  .alert {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffcccc;
+    color: #990000;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: none;
+    z-index: 999;
+  }
+
+  .alert.show {
+    display: block;
   }
 
   @keyframes spin {
@@ -159,25 +217,10 @@ body {
 
     .main-content {
       font-size: 16px;
+      padding: 10px;
     }
-  }
 
-  .alert {
-    display: none;
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    padding: 10px 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    z-index: 1100;
-    font-size: 14px;
-  }
-
-  .alert.show {
-    display: block;
+    .card {
+      font-size: 14px;
+    }
   }
