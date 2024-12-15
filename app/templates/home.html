@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="logo">Search</div>
+<div class="logo" id="logo">Search</div>
 <form class="search-container" action="/search" method="GET" onsubmit="showMainContent(event)">
     <textarea id="searchInput" name="q" placeholder="Write your search query..."></textarea>
-    <button type="submit">Search</button>
+    <button type="submit">Classify</button>
 </form>
 <div class="main-content">
     <div id="sentimentCard" class="card sentiment-card sentiment-neutral">
@@ -64,6 +64,8 @@
                     },
                     success: sentiment => {
                         console.log(topic, sentiment)
+
+                        document.getElementById('logo').hidden
 
                         document.getElementById('sentimentCard').className = `card sentiment-card sentiment-${sentiment[0].label}`;
                         document.getElementById('sentimentResult').textContent = sentiment[0].message;
