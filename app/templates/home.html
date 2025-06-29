@@ -1,20 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="logo" id="logo">Search</div>
+<div class="logo" id="logo">Tweet Sentiment</div>
 <form class="search-container" action="/search" method="GET" onsubmit="showMainContent(event)">
-    <textarea id="searchInput" name="q" placeholder="Write your search query..."></textarea>
+    <textarea id="searchInput" name="q" placeholder="Write your tweet here.."></textarea>
     <button type="submit">Classify</button>
 </form>
 <div class="main-content">
-    <div id="sentimentCard" class="card sentiment-card sentiment-neutral">
-        <h3>Sentiment Analysis</h3>
-        <p id="sentimentResult">Neutral</p>
-    </div>
-    <div id="topicsCard" class="card topics-card">
-        <h3>Topic Classification</h3>
-        <strong id="topicText"></strong>
-        <p id="topicDescription"></p>
+    <div style="display: flex;">
+        <div>
+            <div id="sentimentCard" class="card sentiment-card sentiment-neutral">
+                <h3>Sentiment Analysis</h3>
+                <p id="sentimentResult">Neutral</p>
+            </div>
+            <div id="topicsCard" class="card topics-card">
+                <h3>Topic Classification</h3>
+                <strong id="topicText"></strong>
+                <p id="topicDescription"></p>
+            </div>
+        </div>
+        <iframe
+            width="600"
+            height="300"
+            frameborder="0"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=107.6091%2C-6.9147%2C107.6291%2C-6.9047&layer=mapnik&marker=-6.9147%2C107.6191"
+            style="border:1px solid black;">
+        </iframe>
     </div>
 </div>
 
@@ -22,7 +33,7 @@
     <div class="spinner"></div>
 </div>
 
-<div class="alert" id="alert">Please enter a search query!</div>
+<div class="alert" id="alert">Please enter a tweet!</div>
 
 <div class="footer">
     <p>Made with ❤️ | <a href="#">Privacy</a> | <a href="#">Terms</a></p>
