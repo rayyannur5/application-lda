@@ -1,109 +1,73 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="logo" id="logo">Search</div>
-<form class="search-container" action="/search" method="GET" onsubmit="showMainContent(event)">
-    <textarea id="searchInput" name="q" placeholder="Write your search query..."></textarea>
-    <button type="submit">Classify</button>
-</form>
-<div class="main-content">
-    <div id="sentimentCard" class="card sentiment-card sentiment-neutral">
-        <h3>Sentiment Analysis</h3>
-        <p id="sentimentResult">Neutral</p>
+
+<div class="container">
+    <header
+        class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <div class="col-md-3 mb-2 mb-md-0">
+            <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none fw-bold">
+                SINAWA
+            </a>
+        </div>
+    
+        <div class="col-md-3 text-end">
+            <a href="/logout" type="button" class="btn btn-danger">Logout</a>
+        </div>
+    </header>
+
+    <form class="d-flex justify-content-between mt-3" onsubmit="proses(event, this)">
+        <div class="col-6 d-flex gap-2">
+            <div class="input-group">
+                <span class="input-group-text">File CSV</span>
+                <input type="file" name="file" class="form-control">
+            </div>
+            <button class="btn btn-outline-primary">Proses</button>
+        </div>
+
+        <a id="btn-download" class="d-none" href="{{ url_for('static', filename='result.csv') }}">
+            <button type="button" class="btn btn-primary">Unduh</button>
+        </a>
+    </form>
+
+
+    <div id="result" class="mt-3">
+        
     </div>
-    <div id="topicsCard" class="card topics-card">
-        <h3>Topic Classification</h3>
-        <strong id="topicText"></strong>
-        <p id="topicDescription"></p>
-    </div>
+
+
+
 </div>
 
-<div class="preloader" id="preloader">
-    <div class="spinner"></div>
-</div>
-
-<div class="alert" id="alert">Please enter a search query!</div>
-
-<div class="footer">
-    <p>Made with ❤️ | <a href="#">Privacy</a> | <a href="#">Terms</a></p>
-</div>
 {% endblock %}
 
 {% block script %}
 <script>
-    function showMainContent(event) {
-        event.preventDefault();
+    function proses(event, element) {
+        event.preventDefault()
 
-        const searchInput = document.getElementById('searchInput');
-        const alertBox = document.getElementById('alert');
+        data = new FormData(element)
 
-        if (searchInput.value.trim() === '') {
-            // Show alert if input is empty
-            alertBox.classList.add('show');
-            setTimeout(() => alertBox.classList.remove('show'), 3000); // Hide alert after 3 seconds
-            return;
-        }
-
-        // Show the preloader
-        const preloader = document.getElementById('preloader');
-
+        $('#result').html('')
+        $('#btn-download').addClass('d-none')
 
         $.ajax({
-            url: '/predict_topic',
-            data: {
-                text: searchInput.value,
+            url: '/proses',
+            processData: false,
+            contentType: false,
+            method: 'POST',
+            data: data,
+            beforeSend: () => $('.preloader').addClass('active'),
+            complete: () => $('.preloader').removeClass('active'),
+            success: data => {
+                $('#btn-download').removeClass('d-none')
+                $('#result').html(data)
             },
-            beforeSend: () => {
-                preloader.classList.add('active')
-            },
-            success: topic => {
-                $.ajax({
-                    url: '/predict_sentiment',
-                    data: {
-                        text: searchInput.value,
-                    },
-                    success: sentiment => {
-                        console.log(topic, sentiment)
-
-                        document.getElementById('logo').hidden
-
-                        document.getElementById('sentimentCard').className = `card sentiment-card sentiment-${sentiment[0].label}`;
-                        document.getElementById('sentimentResult').textContent = sentiment[0].message;
-
-                        document.getElementById('topicText').innerHTML = topic.message;
-                        document.getElementById('topicDescription').innerHTML = topic.content;
-
-                        document.body.classList.add('show-main');
-                        const mainContent = document.querySelector('.main-content');
-                        mainContent.style.display = 'block';
-                        setTimeout(() => mainContent.classList.add('fade-in'), 50); // Add fade-in effect
-
-                        preloader.classList.remove('active');
-                    },
-                    error: err => console.log(err)
-                })
-            },
-            error: err => console.log(err)
+            error: err => {
+                console.log(err)
+            }
         })
 
-        // Simulate loading time
-        // setTimeout(() => {
-        //     // Set sentiment result dynamically (example logic)
-        //     const sentimentResult = "Positive"; // Example: dynamically get this value
-        //     const sentimentCard = document.getElementById('sentimentCard');
-        //     const sentimentText = document.getElementById('sentimentResult');
-
-        //     if (sentimentResult === "Positive") {
-        //         sentimentCard.className = 'card sentiment-card sentiment-positive';
-        //         sentimentText.textContent = "Positive";
-        //     } else if (sentimentResult === "Negative") {
-        //         sentimentCard.className = 'card sentiment-card sentiment-negative';
-        //         sentimentText.textContent = "Negative";
-        //     } else {
-        //         sentimentCard.className = 'card sentiment-card sentiment-neutral';
-        //         sentimentText.textContent = "Neutral";
-        //     }
-        // }, 2000); // Adjust the duration as needed
-    }
+    } 
 </script>
 {% endblock %}
