@@ -37,7 +37,7 @@ def background_task_wrapper(filepath, app):
             )
             
             # Kirim string HTML yang sudah jadi ini ke client
-            socketio.emit('proses_selesai', {'html': result_html})
+            socketio.emit('proses_selesai', {'html': result_html, 'generated_analysis': hasil_dict['generated_analysis'], 'df_hasil_head':hasil_dict['df_hasil_head']})
             print(f"BACKGROUND WRAPPER: Proses selesai. String HTML dari result.html telah dikirim.")
 
         except Exception as e:

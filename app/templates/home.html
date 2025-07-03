@@ -43,22 +43,47 @@
             </div>
         </div>
 
-        <div id="result-card" class="card shadow-sm d-none">
+        <div id="sample-card" class="card shadow-sm mb-4 d-none">
             <div class="card-header bg-light d-flex justify-content-between align-items-center p-3">
-                <h5 id="result-title" class="mb-0">Hasil Proses</h5>
+                <h5 id="sample-title" class="mb-0">Data Sample</h5>
                 <a id="btn-download" href="{{ url_for('static', filename='result.csv') }}" class="btn btn-success d-none align-items-center gap-2" download>
                     <i class="bi bi-download"></i><span>Unduh Hasil</span></a>
+            </div>
+            <div class="card-body">
+                <div id="sample-content" class="table-responsive"></div>
+            </div>
+        </div>
+
+        <div id="result-card" class="card shadow-sm mb-4 d-none">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center p-3">
+                <h5 id="result-title" class="mb-0">Hasil Proses</h5>
             </div>
             <div class="card-body">
                 <div id="result-content" class="table-responsive"></div>
             </div>
         </div>
+
+        <div id="gemini-result-card" class="card shadow-sm d-none">
+            <div class="card-header bg-light p-3">
+                <h5 class="mb-0 d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-stars"></i>
+                    <span>Ringkasan dan Analisis</span>
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div id="gemini-content">
+                    </div>
+            </div>
+        </div>
+
     </main>
 </div>
 {% endblock %}
 
 {% block script %}
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
 <script>
 $(document).ready(function() {
     const socket = io();
@@ -69,6 +94,10 @@ $(document).ready(function() {
     
     const logCard = $('#log-card'), logContainer = $('#log-container'), logList = $('#log-container ul');
     const resultCard = $('#result-card'), resultTitle = $('#result-title'), resultContent = $('#result-content'), btnDownload = $('#btn-download');
+
+    const geminiResultCard = $('#gemini-result-card'), geminiContent = $('#gemini-content');
+
+    const sampleCard = $('#sample-card'), sampleContent = $('#sample-content');
 
     let processStartTime = null;
     let lastLogTime = null;
@@ -116,12 +145,21 @@ $(document).ready(function() {
         errorAlert.addClass('d-none');
         logCard.addClass('d-none');
         resultCard.addClass('d-none');
+        geminiResultCard.addClass('d-none'); // --- BARU: Sembunyikan kartu Gemini saat reset ---
+        sampleCard.addClass('d-none'); // --- BARU: Sembunyikan kartu Gemini saat reset ---
         logList.html('');
         resultContent.html('');
-        btnDownload.addClass('d-none');
+        geminiContent.html(''); // --- BARU: Kosongkan konten Gemini saat reset ---
+        sampleContent.html(''); // --- BARU: Kosongkan konten Gemini saat reset ---
+        btnDownload.addClass('d-one');
         processStartTime = null;
         lastLogTime = null;
     }
+
+    const linkify = (text) => {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlRegex, url => `<a href="${url}" target="_blank">${url}</a>`);
+    };
 
     uploadForm.on('submit', function(event) {
         event.preventDefault();
@@ -189,8 +227,69 @@ $(document).ready(function() {
         resultTitle.text('Hasil Visualisasi LDA');
         resultContent.html(data.html);
         btnDownload.removeClass('d-none');
-        
         resultCard.removeClass('d-none');
+
+        if (data.generated_analysis) {
+            console.log('CLIENT: Menemukan dan merender analisis dari Gemini.');
+
+            // Gunakan marked.js untuk mengubah Markdown menjadi HTML
+            const analysisHtml = marked.parse(data.generated_analysis);
+            geminiContent.html(analysisHtml);
+
+            // Beri style pada tabel yang dihasilkan oleh Markdown agar sesuai dengan Bootstrap
+            geminiContent.find('table').addClass('table table-bordered table-striped');
+
+            // Tampilkan kartu Gemini
+            geminiResultCard.removeClass('d-none');
+        }
+
+        if (data.df_hasil_head) {
+            console.log('CLIENT: Menemukan dan merender data sample.');
+
+            const sampleData = JSON.parse(data.df_hasil_head)
+
+            let tbody = ""
+            
+            for (const key in sampleData.full_text) {
+                const text = sampleData.full_text[key] || '';
+                const sentiment = sampleData.sentiment[key] || '';
+                const kebijakan = sampleData.kebijakan[key] || '';
+                const topic = sampleData.topic[key] !== undefined ? sampleData.topic[key] : '';
+                
+                // Menentukan kelas CSS berdasarkan sentimen
+                const sentimentClass = sentiment === 'positive' ? 'sentiment-positive' : 'sentiment-negative';
+                
+                tbody += `
+                    <tr>
+                        <td>${linkify(text)}</td>
+                        <td class="${sentimentClass}">${sentiment}</td>
+                        <td>${kebijakan}</td>
+                        <td>${topic}</td>
+                    </tr>
+                `;
+            }
+
+
+            sampleContent.html(`
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Full Text</th>
+                            <th>Sentiment</th>
+                            <th>Kebijakan</th>
+                            <th>Topic</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    ${tbody}
+                    </tbody>
+                </table>
+            `)
+
+            sampleCard.removeClass('d-none');
+
+        }
+
         $('html, body').animate({ scrollTop: resultCard.offset().top - 20 }, 500);
     });
 });
