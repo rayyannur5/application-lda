@@ -164,18 +164,48 @@ def lda(df):
 
     lda_model = LdaModel(corpus, num_topics=3, id2word=id2word, passes=10)
 
+    for idx, topic in lda_model.print_topics(-1):
+        print('\nTopic: {} \nWords: {}'.format(idx, topic))
+
     vis = pyLDAvis.gensim.prepare(lda_model, corpus, id2word, sort_topics=False)
     #   pyLDAvis.save_html(vis, './app/templates/lda.html')
     html = pyLDAvis.prepared_data_to_html(vis)
 
-    return html
+    def get_max_topics(topics):
+        max = topics[0][1]
+        num_topic = 0
+        for topic in topics:
+            if topic[1] > max:
+                max = topic[1]
+                num_topic = topic[0]
+        return num_topic
+
+    get_document_topics = [lda_model.get_document_topics(item) for item in corpus]
+    topic = []
+    for item in corpus:
+        topics = lda_model.get_document_topics(item)
+        topic.append(get_max_topics(topics))
+
+    df['topic'] = topic
+    return html, df
 
 def main_process(file):
     data = preprocess(file)
     data = process_sentiment(data)
     data = process_kebijakan(data)
     data.to_csv('./app/static/result.csv')
-    html = lda(data)
+    html, data = lda(data)
+
+    df_hasil_head = data.groupby(['sentiment', 'topic']).head(5).reset_index(drop=True).drop(['clean_text', 'tokenize_text', 'filter_text', 'stem_text'], axis=1).to_json()
+
+    print("\nHasil jika mengambil 5 baris pertama (bukan acak):")
+    print(df_hasil_head)
+
+    print("\nHasil sentiment")
+    print(data['sentiment'].value_counts())
+    
+    print("\nHasil topic")
+    print(data['topic'].value_counts())
 
     sentiment = data["sentiment"].value_counts().to_dict()
     kebijakan = data["kebijakan"].value_counts().to_dict()
