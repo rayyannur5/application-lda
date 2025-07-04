@@ -51,28 +51,26 @@
             </tbody>
         </table>
     </div>
-    {% for key, value in kebijakan.items() %}
-        <div class="col-12">
-            <h6 class="text-center">{{ key }}</h6>
-            {% if key == 'Jatim Agro' %}
-                <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_agro.png') }}" alt="">
-            {% elif key == 'Jatim Akses' %}
-                <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_akses.png') }}" alt="">
-            {% elif key == 'Jatim Amanah' %}
-                <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_amanah.png') }}" alt="">
-            {% elif key == 'Jatim Berdaya' %}
-                <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_berdaya.png') }}" alt="">
-            {% elif key == 'Jatim Berkah' %}
-                <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_berkah.png') }}" alt="">
-            {% elif key == 'Jatim Cerdas dan Sehat' %}
-                <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_cerdas_sehat.png') }}" alt="">
-            {% elif key == 'Jatim Harmoni' %}
-                <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_harmoni.png') }}" alt="">
-            {% elif key == 'Jatim Kerja' %}
-                <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_kerja.png') }}" alt="">
-            {% else %}
-                <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_sejahtera.png') }}" alt="">
-            {% endif %}
-        </div>
-    {% endfor %}
+    <div class="col-12">
+        <h6 class="text-center">{{ kebijakan_teratas }}</h6>
+        {% if kebijakan_teratas == 'Jatim Agro' %}
+            <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_agro.png') }}" alt="">
+        {% elif kebijakan_teratas == 'Jatim Akses' %}
+            <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_akses.png') }}" alt="">
+        {% elif kebijakan_teratas == 'Jatim Amanah' %}
+            <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_amanah.png') }}" alt="">
+        {% elif kebijakan_teratas == 'Jatim Berdaya' %}
+            <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_berdaya.png') }}" alt="">
+        {% elif kebijakan_teratas == 'Jatim Berkah' %}
+            <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_berkah.png') }}" alt="">
+        {% elif kebijakan_teratas == 'Jatim Cerdas dan Sehat' %}
+            <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_cerdas_sehat.png') }}" alt="">
+        {% elif kebijakan_teratas == 'Jatim Harmoni' %}
+            <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_harmoni.png') }}" alt="">
+        {% elif kebijakan_teratas == 'Jatim Kerja' %}
+            <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_kerja.png') }}" alt="">
+        {% else %}
+            <img style="width: 100%;" src="{{ url_for('static', filename='gis_jatim_sejahtera.png') }}" alt="">
+        {% endif %}
+    </div>
 </div>

@@ -27,13 +27,16 @@ def background_task_wrapper(filepath, app):
         try:
             # Panggil main_process, yang akan mengembalikan dictionary hasil
             hasil_dict = main_process(filepath=filepath, status_callback=emit_status_callback)
+
+            top_key = max(hasil_dict['kebijakan'], key=hasil_dict['kebijakan'].get)
             
             # Sekarang render_template akan berhasil karena berada di dalam context
             result_html = render_template(
                 'result.html', 
                 lda=hasil_dict['html'], 
                 sentiment=hasil_dict['sentiment'], 
-                kebijakan=hasil_dict['kebijakan']
+                kebijakan=hasil_dict['kebijakan'],
+                kebijakan_teratas=top_key
             )
             
             # Kirim string HTML yang sudah jadi ini ke client
